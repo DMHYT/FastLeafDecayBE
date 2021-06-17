@@ -1,0 +1,5 @@
+{
+    "enabled": true,
+    "minimum_decay_time": 4,
+    "maximum_decay_time": 11
+}

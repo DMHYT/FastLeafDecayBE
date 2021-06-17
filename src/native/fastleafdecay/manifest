@@ -1,0 +1,10 @@
+{
+    "shared": {
+        "name": "fastleafdecay",
+        "include": []
+    },
+    "depends": [
+    	"innercore",
+    	"nativejs"
+	]
+}

@@ -1,0 +1,18 @@
+{
+    "java.dependency.packagePresentation": "flat",
+    "java.dependency.syncWithFolderExplorer": true,
+    "files.exclude": {
+        "**/__pycache__/**": true,
+        ".settings/**": true,
+        ".project": true,
+        ".gitattributes": true,
+        "toolchain/ndk": true,
+        "toolchain/bin": true,
+        "toolchain/adb": true,
+        "toolchain/build/gcc": true,
+        "toolchain/build/gradle": true,
+        "toolchain/build/lock": true,
+        "**/*.log": true
+    },
+    "vscode.tsc.compiler.alertTSConfigChanges": "never"
+}

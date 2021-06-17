@@ -1,0 +1,33 @@
+{
+    "description": "This is a Fast Leaf Decay mod configuration file",
+    "properties": {
+        "minimum_decay_time": {
+            "name": {
+                "en": "Minimum Decay Time",
+                "ru": "Минимальное время отмирания"
+            },
+            "description": {
+                "en": "Minimum time in ticks for leaf decay. Must be lower than Maximum Decay Time!",
+                "ru": "Минимальное время в тиках на отмирание листвы. Должно быть меньше максимального!"
+            },
+            "displayIf": "enabled",
+            "type": "SeekBar",
+            "min": 1,
+            "max": "maximum_decay_time - 1"
+        },
+        "maximum_decay_time": {
+            "name": {
+                "en": "Maximum Decay Time",
+                "ru": "Максимальное время отмирания"
+            },
+            "description": {
+                "en": "Maximum time in ticks for leaf decay. Must be higher than Minimum Decay Time!",
+                "ru": "Максимальное время в тиках на отмирание листвы. Должно быть больше минимального!"
+            },
+            "displayIf": "enabled",
+            "type": "SeekBar",
+            "min": "minimum_decay_time + 1",
+            "max": 99
+        }
+    }
+}

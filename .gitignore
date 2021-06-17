@@ -1,0 +1,15 @@
+.vscode/.ropeproject
+toolchain/build
+toolchain/temp
+toolchain/ndk
+output
+!.idea/runConfigurations
+**/__pycache__
+**/tsconfig.json
+
+*.log
+*.icmod
+
+core-engine.d.ts
+android.d.ts
+android-declarations.d.ts
