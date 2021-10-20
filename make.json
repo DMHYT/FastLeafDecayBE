@@ -1,11 +1,11 @@
 {
     "global": {
         "info": {
-            "name": "Fast Leaf Decay BE",
+            "name": "Fast Leaf Decay",
             "author": "vsdum",
             "version": "1.0",
-            "description": "A simple mod that speeds up leaf decay after you cut down the wood in a tree. By default it will only take about five seconds before all leaves are gone.",
-            "icon": "src/icon.png"
+            "description": "A simple mod that speeds up leaf decay after you cut down the wood in a tree.",
+            "clientside": false
         },
         "api": "CoreEngine"
     },
@@ -24,6 +24,24 @@
         "pushTo": "storage/emulated/0/games/horizon/packs/Inner_Core_1/innercore/mods/FastLeafDecayBE",
         "ndkPath": null
     },
+    "resources": [
+        {
+            "path": "src/assets/res",
+            "type": "resource_directory"
+        },
+        {
+            "path": "src/assets/gui",
+            "type": "gui"
+        },
+        {
+            "path": "src/assets/resource_packs/*",
+            "type": "minecraft_resource_pack"
+        },
+        {
+            "path": "src/assets/behavior_packs/*",
+            "type": "minecraft_behavior_pack"
+        }
+    ],
     "sources": [
         {
             "source": "src/dev",
@@ -35,12 +53,26 @@
             "source": "src/launcher.js",
             "type": "launcher",
             "language": "javascript"
+        },
+        {
+            "source": "src/lib/*",
+            "type": "library",
+            "language": "javascript"
+        },
+        {
+            "source": "src/preloader/*",
+            "type": "preloader",
+            "language": "javascript"
         }
     ],
     "compile": [
         {
             "source": "src/native/*",
             "type": "native"
+        },
+        {
+            "source": "src/java/*",
+            "type": "java"
         }
     ],
     "additional": [

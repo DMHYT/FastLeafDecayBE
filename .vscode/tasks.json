@@ -2,6 +2,30 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "Initialize Environment",
+			"type": "shell",
+			"options": {
+				"cwd": ".\\toolchain\\python"
+			},
+			"command": "..\\initialize-environment.bat",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Update .includes",
+			"type": "shell",
+			"options": {
+				"cwd": ".\\toolchain\\python"
+			},
+			"command": "..\\update-includes.bat",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
 			"label": "Assemble Mod for Release",
 			"type": "shell",
 			"options": {
@@ -65,6 +89,18 @@
 			}
 		},
 		{
+			"label": "Build and Push Java",
+			"type": "shell",
+			"options": {
+				"cwd": ".\\toolchain\\python"
+			},
+			"command": "..\\compile-java.bat",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
 			"label": "Build and Push Native",
 			"type": "shell",
 			"options": {
@@ -75,6 +111,24 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"label": "Connect to ADB",
+			"type": "shell",
+			"options": {
+				"cwd": ".\\toolchain\\python"
+			},
+			"command": "python",
+			"args": [
+				"task.py",
+				"connectToADB",
+				"'${input:ip}:${input:port}'"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
 		},
 		{
 			"label": "Download Declarations",

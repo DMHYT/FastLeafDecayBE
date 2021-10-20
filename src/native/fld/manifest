@@ -1,7 +1,7 @@
 {
     "shared": {
-        "name": "fastleafdecay",
-        "include": []
+        "name": "fld",
+        "include": [ "shared_headers" ]
     },
     "depends": [
     	"innercore",

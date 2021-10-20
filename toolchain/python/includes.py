@@ -182,17 +182,23 @@ class Includes:
 	def get_tsconfig(self):
 		return join(self.directory, "tsconfig.json")
 		
-	def create_tsconfig(self, temp_path):
+	def create_tsconfig(self, temp_path: str):
 		declarations = []
 		declarations.extend(glob.glob(make_config.get_path(
 			"toolchain/declarations/**/*.d.ts"), recursive=True))
 		declarations.extend(glob.glob(make_config.get_path(
 			"toolchain/build/project/declarations/**/*.d.ts"), recursive=True))
-
-		currentName = splitext(basename(temp_path))[0]
-		for d in declarations:
-			if d.endswith(f"{currentName}.d.ts"):
-				declarations.remove(d)
+		filteredDeclarations = []
+		for declaration in declarations:
+			declaration = str(declaration)
+			if temp_path.endswith("preloader.js"):
+				if declaration.endswith("preloader.d.ts") or declaration.endswith("android.d.ts") or declaration.endswith("android-declarations.d.ts"):
+					filteredDeclarations.append(declaration)
+			# Here you can add declarations that must be ignored in the mod sources
+			# For example, `or declaration.endswith("AvaritiaAPI.d.ts")`
+			elif not (declaration.endswith("preloader.d.ts") or False): # Here instead of False
+				filteredDeclarations.append(declaration)
+		declarations = filteredDeclarations
 
 		template = {
 			"compilerOptions": {
@@ -203,6 +209,7 @@ class Includes:
 				"downlevelIteration": True,
 				"allowJs": True
 			},
+			"compileOnSave": False,
 			"exclude": [
 				"**/node_modules/*",
 				"dom",

@@ -2,6 +2,7 @@ import os
 import os.path
 import sys
 import time
+import urllib.request as request
 
 from utils import ensure_directory, ensure_file_dir, clear_directory, copy_file, copy_directory
 
@@ -104,6 +105,12 @@ def task_compile_native_release():
 	return compile_all_using_make_config(abis)
 
 
+@task("compileJavaDebug", lock=["java", "cleanup", "push"])
+def task_compile_java_debug():
+	from java.java_build import compile_all_using_make_config
+	return compile_all_using_make_config()
+
+
 @task("compileJavaRelease", lock=["java", "cleanup", "push"])
 def task_compile_java_release():
 	from java.java_build import compile_all_using_make_config
@@ -114,6 +121,12 @@ def task_compile_java_release():
 def task_build_scripts():
 	from script_build import build_all_scripts
 	return build_all_scripts()
+
+
+@task("buildResources", lock=["resource", "cleanup", "push"])
+def task_resources():
+	from script_build import build_all_resources
+	return build_all_resources()
 
 
 @task("buildInfo", lock=["cleanup", "push"])
@@ -215,19 +228,166 @@ def stop_horizon():
 	
 @task("loadDocs")
 def task_load_docs():
-	import urllib.request
-	print("downloading...")
-	def _load(name):
-		response = urllib.request.urlopen("https://docs.mineprogramming.org/" + name + ".d.ts")
+	def _load(name, fromDocs=True, fileName=None):
+		url = ("https://docs.mineprogramming.org/" + name + ".d.ts") if fromDocs else name
+		response = request.urlopen(url)
 		content = response.read().decode('utf-8')
-		with open(make_config.get_path("toolchain/declarations/" + name + ".d.ts"), 'w') as docs:
+		if fileName == None:
+			fileName = name
+		with open(make_config.get_path("toolchain/declarations/" + fileName + ".d.ts"), 'w') as docs:
 			docs.write(content)
+		print(fileName + ".d.ts downloaded")
+	print("downloading ts declarations...")
 	_load("core-engine")
 	_load("android")
 	_load("android-declarations")
+	_load("https://raw.githubusercontent.com/DMHYT/innercore-development-cloud/main/preloader.d.ts", fromDocs=False, fileName="preloader")
 	print("complete!")
 	return 0
 
+@task("loadJavaDependencies")
+def task_load_java_dependencies():
+	def _load(name):
+		url = "https://github.com/DMHYT/innercore-development-cloud/blob/main/classpath/" + name + ".jar?raw=true"
+		local_path = make_config.get_path("toolchain/classpath/" + name + ".jar")
+		request.urlretrieve(url, filename=local_path)
+		print(name + ".jar downloaded")
+	print("downloading java dependencies...")
+	_load("android-support-multidex")
+	_load("android-support-v4")
+	_load("android-support-v7-recyclerview")
+	_load("android")
+	_load("classes-dex2jar")
+	_load("classes2-dex2jar")
+	_load("horizon-classes")
+	_load("rhino-1.7.7")
+	print("complete!")
+	return 0
+
+@task("loadAdbAndBin")
+def task_load_adb_and_bin():
+	adb = make_config.get_path("toolchain/adb")
+	if not os.path.exists(adb):
+		os.mkdir(adb)
+	bn = make_config.get_path("toolchain/bin")
+	if not os.path.exists(bn):
+		os.mkdir(bn)
+	if not os.path.exists(bn + "\\gradle"):
+		os.mkdir(bn + "\\gradle")
+		os.mkdir(bn + "\\gradle\\wrapper")
+	elif not os.path.exists(bn + "\\gradle\\wrapper"):
+		os.mkdir(bn + "\\gradle\\wrapper")
+	def _load(path):
+		url = "https://github.com/DMHYT/innercore-development-cloud/blob/main/" + path + "?raw=true"
+		local_path = make_config.get_path("toolchain/" + path)
+		try:			
+			request.urlretrieve(url, filename=local_path)
+			print(path + " downloaded")
+		except PermissionError:
+			print(path + " was already downloaded")
+	print("downloading adb...")
+	_load("adb/AdbWinApi.dll")
+	_load("adb/AdbWinUsbApi.dll")
+	_load("adb/adb.exe")
+	print("complete!")
+	print("downloading java tools...")
+	_load("bin/gradle/wrapper/gradle-wrapper.jar")
+	_load("bin/gradle/wrapper/gradle-wrapper.properties")
+	_load("bin/dx.jar")
+	_load("bin/fakeso.cpp")
+	_load("bin/gradlew")
+	_load("bin/gradlew.bat")
+	print("complete!")
+	return 0
+
+@task("downloadGnustlHeaders")
+def task_download_gnustl_headers():
+	try:
+		from zipfile import ZipFile
+		print("downloading gnustl shared headers")
+		url = "https://github.com/DMHYT/mobile-gnustl-headers/releases/download/000/stl.zip"
+		local_path = make_config.get_path("src/native/fld/shared_headers/stl.zip")
+		request.urlretrieve(url, filename=local_path)
+		with ZipFile(local_path, 'r') as zipp:
+			zipp.extractall(local_path[:-7])
+		os.remove(local_path)
+		print("complete!")
+	except:
+		pass
+	return 0
+
+@task("downloadNdkIfNeeded")
+def task_download_ndk_if_needed():
+	from native.native_setup import require_compiler_executable
+	print("preparing ndk...")
+	require_compiler_executable(arch="arm", install_if_required=True)
+	print("ndk was locally downloaded successfully!")
+	return 0
+
+@task("cleanupOutput")
+def task_cleanup_output():
+	def clean(p):
+		_walk = lambda: [f for f in list(os.walk(p))[1:] if os.path.exists(f[0])]
+		for folder in _walk():
+			if len(folder[2]) > 0:
+				continue
+			if len(folder[1]) > 0:
+				for subfolder in folder[1]:
+					clean(os.path.join(folder[0], subfolder))
+				for folder2 in _walk():
+					if len(folder2[1]) == 0 and len(folder2[2]) == 0:
+						os.rmdir(folder2[0])
+	path = make_config.get_path("output")
+	if os.path.exists(path):
+		clean(path)
+	return 0
+
+@task("updateIncludes")
+def task_update_includes():
+	from functools import cmp_to_key
+	from mod_structure import mod_structure
+	from includes import Includes, temp_directory
+	def libraries_first(a, b):
+		la = a["type"] == "library"
+		lb = b["type"] == "library"
+		if la == lb:
+			return 0
+		elif la:
+			return -1
+		else:
+			return 1
+	sources = sorted(make_config.get_value("sources", fallback=[]), key=cmp_to_key(libraries_first))
+	for item in sources:
+		_source = item["source"]
+		_target = item["target"] if "target" in item else None
+		_type = item["type"]
+		if _type not in ("main", "library", "preloader"):
+			print(f"skipped invalid source with type {_type}")
+			continue
+		for source_path in make_config.get_paths(_source):
+			if not os.path.exists(source_path):
+				print(f"skipped non-existing source path {_source}")
+				continue
+			target_path = _target if _target is not None else f"{os.path.splitext(os.path.basename(source_path))[0]}.js"
+			declare = {
+				"sourceType": {
+					"main": "mod",
+					"launcher": "launcher",
+					"preloader": "preloader",
+					"library": "library"
+				}[_type]
+			}
+			if "api" in item:
+				declare["api"] = item["api"]
+			try:
+				dot_index = target_path.rindex(".")
+				target_path = target_path[:dot_index] + "{}" + target_path[dot_index:]
+			except ValueError:
+				target_path += "{}"
+			mod_structure.update_build_config_list("compile")
+			incl = Includes.invalidate(source_path)
+			incl.create_tsconfig(os.path.join(temp_directory, os.path.basename(target_path)))
+	return 0
 
 @task("connectToADB")
 def task_connect_to_adb():
@@ -266,6 +426,7 @@ def task_cleanup():
 #     import java.java_build
 #     java.java_build.cleanup_gradle_scripts()
 	return 0
+
 
 def error(message, code=-1):
 	sys.stderr.write(message + "\n")

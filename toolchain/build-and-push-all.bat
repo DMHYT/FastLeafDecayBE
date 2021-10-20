@@ -1,3 +1,3 @@
 @echo off
 cd python
-python task.py clearOutput buildScripts compileNativeDebug buildAdditional buildInfo stopHorizon pushEverything launchHorizon
+python task.py clearOutput buildScripts buildResources compileNativeDebug compileJavaDebug buildAdditional buildInfo cleanupOutput stopHorizon pushEverything launchHorizon

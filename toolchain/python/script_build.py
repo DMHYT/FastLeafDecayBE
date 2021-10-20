@@ -17,6 +17,7 @@ def build_source(source_path, target_path):
 
 def build_all_scripts():
 	mod_structure.cleanup_build_target("script_source")
+	mod_structure.cleanup_build_target("script_library")
 	overall_result = 0
 
 	from functools import cmp_to_key
@@ -90,5 +91,55 @@ def build_all_scripts():
 	return overall_result
 
 
+def build_all_resources():
+	mod_structure.cleanup_build_target("resource_directory")
+	mod_structure.cleanup_build_target("gui")
+	mod_structure.cleanup_build_target("minecraft_resource_pack")
+	mod_structure.cleanup_build_target("minecraft_behavior_pack")
+	overall_result = 0
+	
+	for resource in make_config.get_value("resources", fallback=[]):
+		if "path" not in resource or "type" not in resource:
+			print("skipped invalid source json", resource, file=sys.stderr)
+			overall_result = 1
+			continue
+		for source_path in make_config.get_paths(resource["path"]):
+			if not exists(source_path):
+				print("skipped non-existing resource path", resource["path"], file=sys.stderr)
+				overall_result = 1
+				continue
+			resource_type = resource["type"]
+			if resource_type not in ("resource_directory", "gui", "minecraft_resource_pack", "minecraft_behavior_pack"):
+				print("skipped invalid resource with type", resource_type, file=sys.stderr)
+				overall_result = 1
+				continue
+			resource_name = resource["target"] if "target" in resource else basename(source_path)
+			resource_name += "{}"
+
+			if resource_type in ("resource_directory", "gui"):
+				target = mod_structure.new_build_target(
+					resource_type,
+					resource_name,
+					declare={
+						"resourceType": {"resource_directory": "resource", "gui": "gui"}[resource_type]
+					}
+				)
+			else:
+				target = mod_structure.new_build_target(
+					resource_type,
+					resource_name,
+					exclude=True,
+					declare_default={
+						"resourcePacksDir": mod_structure.get_target_directories("minecraft_resource_pack")[0],
+						"behaviorPacksDir": mod_structure.get_target_directories("minecraft_behavior_pack")[0]
+					}
+				)
+			clear_directory(target)
+			copy_directory(source_path, target)
+	mod_structure.update_build_config_list("resources")
+	return overall_result
+
+
 if __name__ == '__main__':
+	build_all_resources()
 	build_all_scripts()

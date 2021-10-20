@@ -1,3 +1,3 @@
 @echo off
 cd python
-python task.py loadDocs
+python task.py loadDocsn downloadGnustlHeaders

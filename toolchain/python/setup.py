@@ -2,13 +2,9 @@ import os
 from os.path import join, exists, isdir, basename, isfile
 import sys
 import json
-from os import getcwd
-
-from base_config import BaseConfig
-
-from utils import clear_directory, copy_directory, ensure_directory, copy_file
+from utils import clear_directory
 import zipfile
-
+from make_config import make_config as make
 
 
 def setup_mod_info(make_file):
@@ -16,17 +12,29 @@ def setup_mod_info(make_file):
 	author = input("Enter author name: ")
 	version = input("Enter project version [1.0]: ")
 	description = input("Enter project description: ")
-
+	isClientOnly = input("Will your mod be client side [y/N]: ")
+	if isClientOnly == "y":
+		isClientOnly = True
+	else: isClientOnly = False
 	if version == "":
 		version = "1.0"
-
 	make_file["global"]["info"] = {
 		"name": name,
 		"author": author,
 		"version": version,
-		"description": description
+		"description": description,
+		"clientside": isClientOnly
 	}
 
+
+def setup_launcher_js(make_file):
+	tab = "    "
+	launcher_contents = "ConfigureMultiplayer({\n" + tab + "\
+		name: \"" + make_file["global"]["info"]["name"] + "\"},\n" + tab + "\
+		version: \"" + make_file["global"]["info"]["version"] + "\",\n" + tab + "\
+		isClientOnly: " + ("true" if make_file["global"]["info"]["clientside"] else "false") + "\n});\nLaunch();"
+	with open(make.get_path("src/launcher.js"), 'w') as file:
+		file.write(launcher_contents)
 
 
 def init_java_and_native(make_file, directory):
@@ -100,7 +108,7 @@ def init_directories(directory):
 	clear_directory(assets_dir)
 	os.makedirs(join(assets_dir, "gui"))
 	os.makedirs(join(assets_dir, "res", "items-opaque"))
-	os.makedirs(join(assets_dir, "res", "terran-atlas"))
+	os.makedirs(join(assets_dir, "res", "terrain-atlas"))
 	libs_dir = join(directory, "src", "lib")
 	clear_directory(libs_dir)
 	os.makedirs(libs_dir)
@@ -145,7 +153,7 @@ init_directories(destination)
 print("initializing java and native modules")
 init_java_and_native(make_obj, destination)
 cleanup_if_required(destination)
-
+setup_launcher_js(make_obj)
 
 with open(make_path, "w", encoding="utf-8") as make_file:
 	make_file.write(json.dumps(make_obj, indent=" " * 4))

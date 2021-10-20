@@ -1,0 +1,3 @@
+@echo off
+cd python
+python task.py loadDocs loadJavaDependencies loadAdbAndBin downloadGnustlHeaders downloadNdkIfNeeded

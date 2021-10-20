@@ -1,3 +1,3 @@
 @echo off
 cd python
-python task.py buildScripts buildAdditional buildInfo stopHorizon pushEverything launchHorizon
+python task.py buildScripts buildResources buildAdditional buildInfo cleanupOutput stopHorizon pushEverything launchHorizon
