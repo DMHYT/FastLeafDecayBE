@@ -24,5 +24,8 @@
     },
     "java.project.referencedLibraries": [
         "toolchain/classpath/*.jar"
+    ],
+    "java.project.sourcePaths": [
+        "src/java/fld/src"
     ]
 }
