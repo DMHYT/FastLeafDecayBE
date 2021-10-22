@@ -5,7 +5,8 @@
             "author": "vsdum",
             "version": "1.0",
             "description": "A simple mod that speeds up leaf decay after you cut down the wood in a tree.",
-            "clientside": false
+            "clientside": false,
+            "icon": "src/icon.png"
         },
         "api": "CoreEngine"
     },
@@ -24,24 +25,7 @@
         "pushTo": "storage/emulated/0/games/horizon/packs/Inner_Core_1/innercore/mods/FastLeafDecayBE",
         "ndkPath": null
     },
-    "resources": [
-        {
-            "path": "src/assets/res",
-            "type": "resource_directory"
-        },
-        {
-            "path": "src/assets/gui",
-            "type": "gui"
-        },
-        {
-            "path": "src/assets/resource_packs/*",
-            "type": "minecraft_resource_pack"
-        },
-        {
-            "path": "src/assets/behavior_packs/*",
-            "type": "minecraft_behavior_pack"
-        }
-    ],
+    "resources": [],
     "sources": [
         {
             "source": "src/dev",
@@ -52,16 +36,6 @@
         {
             "source": "src/launcher.js",
             "type": "launcher",
-            "language": "javascript"
-        },
-        {
-            "source": "src/lib/*",
-            "type": "library",
-            "language": "javascript"
-        },
-        {
-            "source": "src/preloader/*",
-            "type": "preloader",
             "language": "javascript"
         }
     ],
