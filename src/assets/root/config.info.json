@@ -1,6 +1,12 @@
 {
     "description": "This is a Fast Leaf Decay mod configuration file",
     "properties": {
+        "enabled": {
+            "name": {
+                "en": "Enable mod",
+                "ru": "Включить мод"
+            }
+        },
         "minimum_decay_time": {
             "name": {
                 "en": "Minimum Decay Time",
