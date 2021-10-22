@@ -1,6 +1,28 @@
 #ifndef FASTLEAFDECAY_RECOVERED_H
 #define FASTLEAFDECAY_RECOVERED_H
 
+class BlockPos {
+    public:
+    int x, y, z;
+    BlockPos(int, int, int);
+};
+
+class BlockLegacy {
+    public:
+    virtual ~BlockLegacy();
+};
+
+class BlockSource {
+    public:
+    BlockLegacy* getBlock(BlockPos const&) const;
+    int getDimensionId() const;
+};
+
+class LeafBlock : public BlockLegacy {
+    public:
+    void runDecay(BlockSource&, BlockPos const&, int);
+    void die(BlockSource&, BlockPos const&) const;
+};
 
 namespace Core {
     class Random {
@@ -14,8 +36,6 @@ class Level {
     Core::Random* getRandom() const;
 };
 
-class BlockSource;
-
 class Actor {
     public:
     Level* getLevel() const;
@@ -28,15 +48,6 @@ class LocalPlayer : public Player {};
 namespace GlobalContext {
     Level* getLevel();
     LocalPlayer* getLocalPlayer();
-};
-
-class BlockLegacy {
-    public:
-    virtual ~BlockLegacy();
-};
-class LeafBlock : public BlockLegacy {
-    public:
-    void runDecay(BlockSource&, BlockPos const&, int);
 };
 
 

@@ -1,28 +1,34 @@
 #include <hook.h>
 #include <mod.h>
 #include <symbol.h>
-#include <logger.h>
-#include <horizon/types.h>
+#include <jni.h>
+#include <innercore_callbacks.h>
+#include <hook.h>
 #include "recovered.h"
-#include "config.h"
 
-class MainModule : public Module {
+class FLDModule : public Module {
 	public:
-	MainModule(const char* id): Module(id) {};
+	FLDModule(const char* id): Module(id) {};
+	
+	static JNIEnv* env;
+	static jclass fld_class;
+	static jmethodID onLeafDecayRun;
 
 	virtual void initialize() {
 		DLHandleManager::initializeHandle("libminecraftpe.so", "mcpe");
-		HookManager::addCallback(SYMBOL("mcpe", "_ZNK11BlockLegacy15neighborChangedER11BlockSourceRK8BlockPosS4_"), LAMBDA((BlockLegacy* block, BlockSource& region, BlockPos const& pos, BlockPos const& changedPos), {
-			LeafBlock* leaf = dynamic_cast<LeafBlock*>(block);
-			if(leaf){
-				int delay = FLDHandler::baseDecayTime + GlobalContext::getLevel()->getRandom()->nextInt(FLDHandler::randomizationTime);
-				leaf->runDecay(*(GlobalContext::getLocalPlayer()->getRegion()), pos, delay);
-				Logger::debug("FastLeafDecay", "Hook succeeded!");
-			}
+		HookManager::addCallback(SYMBOL("mcpe", "_ZN9LeafBlock8runDecayER11BlockSourceRK8BlockPosi"), LAMBDA((LeafBlock* leaf, BlockSource& region, BlockPos const& pos, int someInt), {
+			env->CallStaticVoidMethod(fld_class, onLeafDecayRun, pos.x, pos.y, pos.z, region.getDimensionId());
 		}, ), HookManager::CALL | HookManager::LISTENER);
     }
 };
 
+JNIEXPORT void JNICALL Java_vsdum_fld_FastLeafDecay_injectJNIEnv
+(JNIEnv* env, jclass clazz) {
+	FLDModule::env = env;
+	FLDModule::fld_class = clazz;
+	FLDModule::onLeafDecayRun = env->GetStaticMethodID(clazz, "onLeafDecayRun", "(IIII)V");
+}
+
 MAIN {
-	Module* main_module = new MainModule("fastleafdecay");
+	Module* main_module = new FLDModule("fastleafdecay");
 };
