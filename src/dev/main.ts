@@ -1,14 +1,6 @@
-(() => {
-    let min = __config__.getInteger("minimum_decay_time");
-    let max = __config__.getInteger("maximum_decay_time");
-    if(min >= max) {
-        Logger.Log("MinimumDecayTime needs to be lower than MaximumDecayTime, resetting to default values!", "FastLeafDecay");
-        Logger.Flush();
-        min = 4, max = 11;
-    }
-    const FLDConfig = WRAP_JAVA("vsdum.fld.FLDConfig");
-    FLDConfig.setMinimumDecayTime(min);
-    FLDConfig.setMaximumDecayTime(max);
-})();
+const FLDConfig = WRAP_JAVA("vsdum.fld.FLDConfig");
+FLDConfig.setDecaySpeed(__config__.getInteger("decaySpeed"));
+FLDConfig.setDecayFuzz(__config__.getInteger("decayFuzz"));
 
-Callback.addCallback("tick", WRAP_JAVA("vsdum.fld.FastLeafDecay").tick);
+const LeafTickScheduler = WRAP_JAVA("vsdum.fld.LeafTickScheduler");
+Callback.addCallback("tick", () => LeafTickScheduler.INSTANCE.tick());

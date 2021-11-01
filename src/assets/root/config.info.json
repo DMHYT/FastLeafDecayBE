@@ -7,33 +7,27 @@
                 "ru": "Включить мод"
             }
         },
-        "minimum_decay_time": {
+        "decaySpeed": {
             "name": {
-                "en": "Minimum Decay Time",
-                "ru": "Минимальное время отмирания"
+                "en": "Decay speed",
+                "ru": "Скорость отмирания"
             },
             "description": {
-                "en": "Minimum time in ticks for leaf decay. Must be lower than Maximum Decay Time!",
-                "ru": "Минимальное время в тиках на отмирание листвы. Должно быть меньше максимального!"
+                "en": "The Speed at which Leaves Decay, Higher -> Slower",
+                "ru": "Скорость, с которой листва будет отмирать, выше -> медленнее"
             },
-            "displayIf": "enabled",
-            "type": "SeekBar",
-            "min": 1,
-            "max": "maximum_decay_time - 1"
+            "displayIf": "enabled"
         },
-        "maximum_decay_time": {
+        "decayFuzz": {
             "name": {
-                "en": "Maximum Decay Time",
-                "ru": "Максимальное время отмирания"
+                "en": "Decay fuzz",
+                "ru": "Случайность отмирания"
             },
             "description": {
-                "en": "Maximum time in ticks for leaf decay. Must be higher than Minimum Decay Time!",
-                "ru": "Максимальное время в тиках на отмирание листвы. Должно быть больше минимального!"
+                "en": "How random will the leaf decay be? Higher -> More Random",
+                "ru": "Насколько рандомным будет отмирание листвы? Выше -> больше рандома"
             },
-            "displayIf": "enabled",
-            "type": "SeekBar",
-            "min": "minimum_decay_time + 1",
-            "max": 99
+            "displayIf": "enabled"
         }
     }
 }

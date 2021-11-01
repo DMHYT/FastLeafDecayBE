@@ -1,10 +1,11 @@
 /// <reference path="core-engine.d.ts" />
 
 declare interface LeafDecayConfig {
-    setMinimumDecayTime(minDecayTime: number): void;
-    setMaximumDecayTime(maxDecayTime: number): void;
+    setDecaySpeed(speed: number): void;
+    setDecayFuzz(fuzz: number): void;
 }
 declare function WRAP_JAVA(clazz: "vsdum.fld.FLDConfig"): LeafDecayConfig;
-declare function WRAP_JAVA(clazz: "vsdum.fld.FastLeafDecay"): {
-    tick: () => void;
+declare interface LeafTickScheduler {
+    readonly INSTANCE: { tick: () => void }
 }
+declare function WRAP_JAVA(clazz: "vsdum.fld.LeafTickScheduler"): LeafTickScheduler;

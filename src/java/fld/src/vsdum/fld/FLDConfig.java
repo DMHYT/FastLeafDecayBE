@@ -5,32 +5,17 @@ import java.util.Random;
 public class FLDConfig {
     
     public static final Random rand = new Random();
-    public static int minimumDecayTime = 4;
-    public static int maximumDecayTime = 11;
-    public static int baseDecayTime = minimumDecayTime;
-    public static int randomizationTime = maximumDecayTime - minimumDecayTime;
+    public static int decaySpeed;
+    public static int decayFuzz;
 
-    private static void update()
+    public static void setDecaySpeed(int speed)
     {
-        baseDecayTime = minimumDecayTime;
-        randomizationTime = maximumDecayTime - minimumDecayTime;
+        decaySpeed = speed;
     }
 
-    public static void setMinimumDecayTime(int value)
+    public static void setDecayFuzz(int fuzz)
     {
-        minimumDecayTime = value;
-        update();
-    }
-
-    public static void setMaximumDecayTime(int value)
-    {
-        maximumDecayTime = value;
-        update();
-    }
-
-    public static int generateDelay()
-    {
-        return baseDecayTime + rand.nextInt(randomizationTime);
+        decayFuzz = fuzz;
     }
 
 }

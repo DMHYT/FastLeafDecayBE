@@ -1,7 +1,7 @@
 {
     "shared": {
         "name": "fld",
-        "include": [ "shared_headers" ]
+        "include": []
     },
     "depends": [
     	"innercore",
